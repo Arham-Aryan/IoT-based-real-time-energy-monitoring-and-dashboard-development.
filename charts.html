@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chart Example</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .chart-container {
+            display: flex;
+            justify-content: space-evenly;
+            max-width: 1000px; 
+            margin: auto;
+        }
+
+        .chart {
+            width: 60%; 
+        }
+    </style>
+</head>
+
+<body>
+    <iframe height="300"
+                src="https://maps.google.com/maps?q={{ device_info['lat'] }},{{ device_info['lon'] }}&hl=us&z=14&amp;output=embed"
+                width="300">
+            </iframe>
+    <div class="chart-container">
+        <div class="chart">
+            <canvas id="myChart" width="600" height="400"></canvas>
+        </div>
+
+        <div class="chart">
+            <canvas id="powerChart" width="600" height="400"></canvas>
+        </div>
+    </div>
+
+    <script>
+        const ctx = document.getElementById('myChart');
+        const powerCtx = document.getElementById('powerChart');
+
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+                datasets: [{
+                        label: 'Voltage (V)',
+                        data: [20, 19, 3, 5, 2, 3],
+                        borderWidth: 1.5
+                    },
+                    {
+                        label: 'Current (mA)',
+                        data: [5, 8, 15, 10, 7, 12],
+                        borderWidth: 1.5
+                    },
+                    {
+                        label: 'Wattage (Watts)',
+                        data: [10, 12, 14, 6, 7, 10],
+                        borderWidth: 1.5
+                    },
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+
+        new Chart(powerCtx, {
+            type: 'line',
+            data: {
+                labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+                datasets: [{
+                    label: 'Power (Wh)',
+                    data: [8, 10, 12, 15, 11, 9],
+                    borderWidth: 1.5
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

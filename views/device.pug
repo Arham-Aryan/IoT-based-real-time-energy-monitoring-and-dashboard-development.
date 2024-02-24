@@ -1,0 +1,68 @@
+doctype html
+html(lang="en")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    title Device Information
+    style.
+      body {
+          font-family: Arial, sans-serif;
+          margin: 0;
+          padding: 0;
+          background: url('https://e1.pxfuel.com/desktop-wallpaper/407/1022/desktop-wallpaper-website-backgrounds-login-page.jpg') center/cover no-repeat fixed;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          min-height: 100vh;
+          color: white;
+      }
+
+      header {
+          background-color: rgba(51, 51, 51, 0.8); /* Use an overlay for better readability */
+          color: white;
+          padding: 20px;
+          font-size: 24px;
+          margin-top: 20px;
+      }
+
+      main {
+          text-align: center;
+      }
+
+      button {
+          padding: 15px 30px;
+          font-size: 18px;
+          margin: 15px;
+          cursor: pointer;
+          background-color: #4CAF50;
+          color: white;
+          border: none;
+          border-radius: 5px;
+          transition: background-color 0.3s ease;
+      }
+
+      button:hover {
+          background-color: #45a049;
+      }
+  body
+    header
+      | Energy Monitoring Dashboard
+    main
+      h2 Device Information
+      p Device Name : #{deviceInfo.result.name}
+      p Device Model : #{deviceInfo.result.model}
+      p Connectivity: Bluetooth and WIFI (2.4 GHz)
+      p IP address : #{deviceInfo.result.ip}
+      p Online : #{deviceInfo.result.online }
+      p Map Location : 
+      iframe(
+       height='300'
+       width='300'
+       src=`https://maps.google.com/maps?q=${deviceInfo.result.lat},${deviceInfo.result.lon}&hl=us&z=14&amp;output=embed`
+      )
+    script.
+      function navigate(page) {
+          // Redirect to the selected page
+          window.location.href = page + '.html'; // Assuming your pages have .html extension
+      }

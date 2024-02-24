@@ -1,0 +1,124 @@
+doctype html
+html(lang="en")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    title Chart Example
+    script(src="https://cdn.jsdelivr.net/npm/chart.js")
+    script(src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.10/dayjs.min.js")
+    style.
+      .chart-container
+        display: flex;
+        justify-content: space-evenly;
+        max-width: 800px;
+        margin: auto;
+        margin-top: 20px; // Add margin-top for spacing
+      .chart
+        width: 60%;
+
+  body
+    div.chart-container
+      div.chart
+        canvas(id="myChart", width="600", height="400")
+      div.chart
+        canvas(id="powerChart", width="600", height="400")
+
+    script.
+      const ctx = document.getElementById('myChart').getContext('2d');
+      const powerCtx = document.getElementById('powerChart').getContext('2d');
+      const meterData = [];
+      
+      const voltage = !{JSON.stringify(voltage)};
+      const amps = !{JSON.stringify(amps)};
+      const power = !{JSON.stringify(power)}
+
+      let lastV = voltage[voltage.length - 1];
+      let totalCost = 0; 
+
+      amps.forEach((a) => {
+        let v = voltage.find((d) => d.event_time === a.event_time);
+        if (!v) v = { ...lastV, event_time: a.event_time };
+        else lastV = v;
+        const w = (parseInt(v.value) / 10) * (parseInt(a.value) / 1000);
+        const p = power.find((d) => d.event_time === a.event_time);
+        if (p) {
+          const consumption = (w / 1000); // Convert Watts to Kilowatts
+          meterData.unshift({ a, v, p, w, t: v.event_time, consumption });
+
+          // Calculate cost based on the specified rates
+          totalCost += calculateCost(consumption);
+        }
+      });
+
+      function calculateCost(consumption) {
+        if (consumption <= 75) {
+          return consumption * 3.8;
+        } else if (consumption <= 200) {
+          return 75 * 3.8 + (consumption - 75) * 5.14;
+        } else {
+          return 75 * 3.8 + 125 * 5.14 + (consumption - 200) * 5.36;
+        }
+      }
+
+      new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: meterData.map((d) => dayjs(d.t).format("HH:mm:ss")),
+          datasets: [
+            {
+              label: 'Voltage (V)',
+              data: meterData.map(({ v }) => parseInt(v.value) / 10),
+              borderWidth: 1.5,
+            },
+            {
+              label: 'Current (mA)',
+              data: meterData.map(({ a }) => parseInt(a.value)),
+              borderWidth: 1.5,
+            },
+            {
+              label: 'Power (Watts)',
+              data: meterData.map(({ w }) => w),
+              borderWidth: 1.5,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: {
+              beginAtZero: true,
+            },
+          },
+        },
+      });
+
+      new Chart(powerCtx, {
+        type: 'bar',
+        data: {
+          labels: meterData.map((d) => dayjs(d.t).format("HH:mm:ss")),
+          datasets: [
+            {
+              label: 'Power Usage (KWh)',
+              data: meterData.map(({ consumption }) => consumption),
+              borderWidth: 1.5,
+            },
+            {
+              label: 'Operating Cost (Taka) per Minute',
+              data: meterData.map(({ consumption }) => calculateCost(consumption)),
+              borderWidth: 1.5,  
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: {
+              beginAtZero: true,
+            },
+          },
+        },
+      });
+
+      console.log('Total Daily Operating Cost: taka' + totalCost.toFixed(2));
